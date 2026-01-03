@@ -136,7 +136,7 @@ export default function EventDetailPage() {
 
     const isAttending = session && event.attendees.some(a => a._id === session.user.id);
     const isAdmin = session?.user?.role === 'admin' || session?.user?.role === 'moderator';
-    const isOrganizer = session?.user?.id === event.organizerId._id;
+    const isOrganizer = session?.user?.id === event.organizerId?._id;
     const canEdit = isAdmin || isOrganizer;
 
     return (
@@ -298,8 +298,8 @@ export default function EventDetailPage() {
                                     <p className="text-sm text-muted-foreground">Organized by</p>
                                     <p className="font-medium flex items-center gap-2">
                                         <User size={16} />
-                                        {event.organizerId.name}
-                                        {event.organizerId.role === 'admin' && 
+                                        {event.organizerId?.name || 'Unknown Organizer'}
+                                        {event.organizerId?.role === 'admin' && 
                                             <span className="text-xs px-2 py-0.5 bg-primary/20 text-primary rounded-full">Admin</span>
                                         }
                                     </p>
