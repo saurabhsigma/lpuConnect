@@ -1,76 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { MessageSquare, Heart, MessageCircle, Send, User } from "lucide-react";
-import Link from "next/link";
-import clsx from "clsx";
+import { Compass } from "lucide-react";
+import { ServerDiscoveryList } from "@/components/ServerDiscovery";
 
-interface Post {
-    _id: string;
-    content: string;
-    category: string;
-    createdAt: string;
-    authorId: {
-        name: string;
-        image?: string;
-    };
-    likes: string[];
-    comments: any[];
-}
 
 export default function CommunityPage() {
     const { data: session } = useSession();
-    const [posts, setPosts] = useState<Post[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [newPost, setNewPost] = useState("");
-    const [category, setCategory] = useState("General");
-    const [sending, setSending] = useState(false);
-
-    useEffect(() => {
-        fetchPosts();
-    }, []);
-
-    const fetchPosts = async () => {
-        try {
-            const res = await fetch("/api/community");
-            if (res.ok) {
-                const data = await res.json();
-                setPosts(data);
-            }
-        } catch (error) {
-            console.error("Error fetching posts:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handlePost = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!newPost.trim() || !session) return;
-        setSending(true);
-
-        try {
-            const res = await fetch("/api/community", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ content: newPost, category }),
-            });
-
-            if (res.ok) {
-                setNewPost("");
-                fetchPosts(); // Refresh posts
-            }
-        } catch (error) {
-            console.error("Error posting:", error);
-        } finally {
-            setSending(false);
-        }
-    };
-
-    const categories = ['General', 'Clubs', 'Academic', 'Events', 'Other'];
-
-    const filteredPosts = category === 'General' && posts.length > 0 ? posts : posts.filter(p => p.category === category);
 
     return (
         <div className="min-h-screen bg-background">
@@ -182,20 +118,9 @@ export default function CommunityPage() {
 
                                     <p className="text-foreground leading-relaxed whitespace-pre-wrap">{post.content}</p>
 
-                                    <div className="flex items-center gap-6 pt-4 border-t border-border/50 text-muted-foreground">
-                                        <button className="flex items-center gap-1 hover:text-red-400 transition-colors">
-                                            <Heart size={18} /> <span className="text-sm">{post.likes?.length || 0}</span>
-                                        </button>
-                                        <button className="flex items-center gap-1 hover:text-blue-400 transition-colors">
-                                            <MessageCircle size={18} /> <span className="text-sm">{post.comments?.length || 0} Comments</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
                 </div>
             </div>
         </div>
     );
 }
+

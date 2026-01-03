@@ -10,7 +10,7 @@ interface UserProfile {
     name: string;
     email: string;
     role: string;
-    avatar?: string;
+    image?: string;
     bio?: string;
     courses?: string[];
     interests?: string[];
@@ -29,6 +29,8 @@ export default function ProfilePage() {
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -59,6 +61,7 @@ export default function ProfilePage() {
             if (res.ok) {
                 const data = await res.json();
                 setProfile(data);
+                setPreview(data.image || null);
                 setFormData({
                     avatar: data.avatar || "boy1",
                     bio: data.bio || "",
@@ -80,26 +83,29 @@ export default function ProfilePage() {
     const handleSave = async () => {
         setSaving(true);
         try {
+            const body = new FormData();
+            body.append("bio", formData.bio);
+            body.append("courses", formData.courses);
+            body.append("interests", formData.interests);
+            body.append("linkedin", formData.linkedin);
+            body.append("github", formData.github);
+            body.append("twitter", formData.twitter);
+            body.append("instagram", formData.instagram);
+
+            if (selectedImage) {
+                body.append("image", selectedImage);
+            }
+
             const res = await fetch("/api/profile", {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    avatar: formData.avatar,
-                    bio: formData.bio,
-                    courses: formData.courses.split(",").map(s => s.trim()).filter(Boolean),
-                    interests: formData.interests.split(",").map(s => s.trim()).filter(Boolean),
-                    socialLinks: {
-                        linkedin: formData.linkedin,
-                        github: formData.github,
-                        twitter: formData.twitter,
-                        instagram: formData.instagram,
-                    }
-                }),
+                body,
             });
 
             if (res.ok) {
                 const updated = await res.json();
                 setProfile(updated);
+                setPreview(updated.image || null);
+                setSelectedImage(null);
                 setIsEditing(false);
                 
                 // Update session with new avatar
@@ -127,8 +133,31 @@ export default function ProfilePage() {
                 <div className="glass-card p-8 rounded-2xl flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-primary/20 to-secondary/20 -z-10" />
 
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 border-4 border-background flex items-center justify-center text-6xl shadow-xl">
-                        {getAvatarById(profile?.avatar || 'boy1').emoji}
+                    <div className="relative">
+                        <div className="w-32 h-32 rounded-full bg-input border-4 border-background overflow-hidden shadow-xl flex items-center justify-center text-4xl">
+                            {preview ? (
+                                <img src={preview} alt="Profile" className="w-full h-full object-cover" />
+                            ) : profile?.name ? (
+                                profile.name.charAt(0)
+                            ) : (
+                                <User />
+                            )}
+                        </div>
+                        {isEditing && (
+                            <label className="absolute -right-2 -bottom-2 px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium cursor-pointer hover:bg-primary/90">
+                                Change
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        setSelectedImage(file || null);
+                                        setPreview(file ? URL.createObjectURL(file) : profile?.image || null);
+                                    }}
+                                />
+                            </label>
+                        )}
                     </div>
 
                     <div className="flex-1 text-center md:text-left">
