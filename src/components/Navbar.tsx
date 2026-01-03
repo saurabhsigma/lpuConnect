@@ -3,15 +3,17 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { User, LogOut, Menu, X } from "lucide-react";
+import { User, LogOut, Menu, X, Moon, Sun } from "lucide-react";
 import { useState } from "react";
 import clsx from "clsx";
 import Avatar from "./Avatar";
+import { useTheme } from "./ThemeProvider";
 
 export function Navbar() {
     const { data: session } = useSession();
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
+    const { theme, toggleTheme } = useTheme();
 
     // Hide navbar on auth pages
     if (pathname?.startsWith("/auth")) return null;
@@ -48,6 +50,13 @@ export function Navbar() {
 
                 {/* Auth Buttons / Profile */}
                 <div className="hidden md:flex items-center gap-4">
+                    <button
+                        onClick={toggleTheme}
+                        className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                        title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+                    >
+                        {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+                    </button>
                     {session ? (
                         <div className="flex items-center gap-4">
                             <Link
@@ -108,6 +117,17 @@ export function Navbar() {
                             {item.name}
                         </Link>
                     ))}
+                    <hr className="border-border" />
+                    <button
+                        onClick={() => {
+                            toggleTheme();
+                            setIsOpen(false);
+                        }}
+                        className="flex items-center gap-2 py-2 text-muted-foreground hover:text-primary transition-colors"
+                    >
+                        {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+                        {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                    </button>
                     <hr className="border-border" />
                     {session ? (
                         <>
