@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Calendar, Users, Clock, MapPin } from "lucide-react";
+import { Calendar, Users, Clock, MapPin, Zap, BookOpen, Map, MessageCircle, User, ArrowRight, Sparkles } from "lucide-react";
 import { getAllAvatars } from "@/lib/avatars";
 
 interface Event {
@@ -39,11 +39,17 @@ export default function Home() {
     <main className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Hero Section */}
       <section className="relative flex flex-col items-center justify-center min-h-[80vh] px-4 text-center overflow-hidden">
+        {/* Animated background elements */}
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-primary/20 via-background to-secondary/20 opacity-50 blur-3xl" />
+        <div className="absolute top-20 right-10 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: "4s" }} />
+        <div className="absolute bottom-20 left-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: "5s", animationDelay: "1s" }} />
 
         <h1 className="relative z-10 text-6xl md:text-8xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-400 to-secondary animate-in fade-in slide-in-from-bottom-4 duration-1000">
           Campus Connect
         </h1>
+        <p className="relative z-10 text-lg md:text-xl text-muted-foreground mt-6 max-w-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+          Your all-in-one platform for campus life. Connect, share, explore, and thrive.
+        </p>
         <br /> <br />
         
         {/* Animated Avatar Network */}
@@ -128,55 +134,61 @@ export default function Home() {
       {/* Top Events Section */}
       {topEvents.length > 0 && (
         <section className="py-20 px-4 max-w-7xl mx-auto w-full z-10">
-          <div className="flex justify-between items-center mb-12">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
             <div>
-              <h2 className="text-3xl md:text-5xl font-bold">
+              <h2 className="text-3xl md:text-5xl font-bold flex items-center gap-3">
+                <Sparkles className="w-8 h-8 text-yellow-400 animate-spin" style={{ animationDuration: "3s" }} />
                 Trending Events
               </h2>
               <p className="text-muted-foreground mt-2">Most popular events happening soon</p>
             </div>
             <Link 
               href="/events" 
-              className="px-6 py-2 rounded-full bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-all"
+              className="px-6 py-2 rounded-full bg-gradient-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 flex items-center gap-2 group"
             >
               View All
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {topEvents.map((event) => (
+            {topEvents.map((event, index) => (
               <Link
                 key={event._id}
                 href={`/events/${event._id}`}
-                className="glass-card rounded-2xl overflow-hidden hover:scale-105 transition-transform duration-300"
+                className="group glass-card rounded-2xl overflow-hidden hover:scale-105 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+                style={{
+                  animationDelay: `${index * 0.1}s`,
+                }}
               >
-                <div className="relative h-48 bg-muted/50">
+                <div className="relative h-48 bg-muted/50 overflow-hidden">
                   {event.image ? (
-                    <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+                    <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                   ) : (
-                    <div className="h-full flex items-center justify-center text-muted-foreground">
-                      <Calendar size={48} className="opacity-20" />
+                    <div className="h-full flex items-center justify-center text-muted-foreground bg-gradient-to-br from-primary/20 to-secondary/20">
+                      <Calendar size={48} className="opacity-30" />
                     </div>
                   )}
-                  <div className="absolute top-3 right-3 bg-green-500/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-white flex items-center gap-1">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute top-3 right-3 bg-gradient-to-r from-green-500 to-emerald-500 backdrop-blur px-3 py-1.5 rounded-full text-sm font-bold text-white flex items-center gap-1.5 shadow-lg">
                     <Users size={14} />
                     {event.attendees.length}
                   </div>
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-3 line-clamp-1">{event.title}</h3>
-                  <div className="space-y-2 text-sm text-muted-foreground">
-                    <p className="flex items-center gap-2">
-                      <Calendar size={14} className="text-primary" />
-                      {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  <h3 className="text-xl font-bold mb-3 line-clamp-1 group-hover:text-primary transition-colors">{event.title}</h3>
+                  <div className="space-y-3 text-sm text-muted-foreground">
+                    <p className="flex items-center gap-2 group-hover:text-primary/80 transition-colors">
+                      <Calendar size={14} className="text-blue-400 flex-shrink-0" />
+                      {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </p>
-                    <p className="flex items-center gap-2">
-                      <Clock size={14} className="text-secondary" />
+                    <p className="flex items-center gap-2 group-hover:text-secondary/80 transition-colors">
+                      <Clock size={14} className="text-orange-400 flex-shrink-0" />
                       {event.time}
                     </p>
-                    <p className="flex items-center gap-2">
-                      <MapPin size={14} className="text-accent" />
-                      {event.location}
+                    <p className="flex items-center gap-2 group-hover:text-accent/80 transition-colors">
+                      <MapPin size={14} className="text-pink-400 flex-shrink-0" />
+                      <span className="line-clamp-1">{event.location}</span>
                     </p>
                   </div>
                 </div>
@@ -188,58 +200,97 @@ export default function Home() {
 
       {/* Features Grid */}
       <section className="py-20 px-4 max-w-7xl mx-auto w-full z-10">
-        <h2 className="text-3xl md:text-5xl font-bold text-center mb-16">
-          Everything you need is here.
-        </h2>
+        <div className="mb-16">
+          <h2 className="text-3xl md:text-5xl font-bold text-center mb-4">
+            Everything you need is here.
+          </h2>
+          <p className="text-center text-muted-foreground text-lg">Campus life made simple, connected, and fun</p>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {[
             {
               title: "Surplus Store",
               description: "Buy and sell used textbooks, gadgets, and more with trusted peers.",
-              icon: "🛍️",
-              color: "bg-blue-500/10 border-blue-500/20 text-blue-400",
+              icon: Zap,
+              color: "from-blue-500 to-cyan-500",
+              bgColor: "bg-blue-500/10 border-blue-500/20",
               href: "/store",
+              gradient: "via-blue-400",
             },
             {
               title: "Hoodmaps",
               description: "Discover hidden gems, rate hostels, and navigate campus like a pro.",
-              icon: "🗺️",
-              color: "bg-green-500/10 border-green-500/20 text-green-400",
+              icon: Map,
+              color: "from-green-500 to-emerald-500",
+              bgColor: "bg-green-500/10 border-green-500/20",
               href: "/hoodmaps",
+              gradient: "via-green-400",
             },
             {
               title: "Event Feed",
               description: "Never miss a campus event. RSVP and see who's going.",
-              icon: "📅",
-              color: "bg-orange-500/10 border-orange-500/20 text-orange-400",
+              icon: Calendar,
+              color: "from-orange-500 to-red-500",
+              bgColor: "bg-orange-500/10 border-orange-500/20",
               href: "/events",
+              gradient: "via-orange-400",
             },
             {
               title: "Community",
               description: "Join discussions, clubs, and connect with students sharing your interests.",
-              icon: "💬",
-              color: "bg-purple-500/10 border-purple-500/20 text-purple-400",
+              icon: MessageCircle,
+              color: "from-purple-500 to-pink-500",
+              bgColor: "bg-purple-500/10 border-purple-500/20",
               href: "/community",
+              gradient: "via-purple-400",
             },
             {
               title: "Student Profiles",
               description: "Showcase your skills, courses, and connect with potential study buddies.",
-              icon: "👤",
-              color: "bg-pink-500/10 border-pink-500/20 text-pink-400",
+              icon: User,
+              color: "from-pink-500 to-rose-500",
+              bgColor: "bg-pink-500/10 border-pink-500/20",
               href: "/profile",
+              gradient: "via-pink-400",
             },
-          ].map((feature, i) => (
-            <Link
-              key={i}
-              href={feature.href}
-              className={`p-8 rounded-2xl border backdrop-blur-sm hover:scale-105 transition-transform duration-300 ${feature.color}`}
-            >
-              <div className="text-4xl mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-bold mb-2 text-foreground">{feature.title}</h3>
-              <p className="text-muted-foreground">{feature.description}</p>
-            </Link>
-          ))}
+            {
+              title: "Learning Resources",
+              description: "Access study materials, notes, and collaborate with classmates.",
+              icon: BookOpen,
+              color: "from-indigo-500 to-blue-500",
+              bgColor: "bg-indigo-500/10 border-indigo-500/20",
+              href: "/community",
+              gradient: "via-indigo-400",
+            },
+          ].map((feature, i) => {
+            const IconComponent = feature.icon;
+            return (
+              <Link
+                key={i}
+                href={feature.href}
+                className={`group relative p-8 rounded-2xl border backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:-translate-y-1 ${feature.bgColor} overflow-hidden`}
+              >
+                {/* Animated gradient background */}
+                <div className={`absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-br ${feature.color} transition-opacity duration-300`} />
+                
+                {/* Glowing border effect on hover */}
+                <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 bg-gradient-to-r ${feature.color} blur-xl transition-opacity duration-300 -z-10`} />
+                
+                <div className="relative">
+                  <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${feature.color} p-3 mb-4 group-hover:scale-110 transition-transform duration-300 flex items-center justify-center`}>
+                    <IconComponent className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary transition-colors">{feature.title}</h3>
+                  <p className="text-muted-foreground text-sm group-hover:text-foreground/80 transition-colors">{feature.description}</p>
+                  <div className="mt-4 flex items-center gap-2 text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <span className="text-sm font-medium">Explore</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
     </main>
