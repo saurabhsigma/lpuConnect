@@ -3,8 +3,8 @@ import mongoose, { Schema,model,models } from "mongoose";
 const serverMembersSchema = new Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     serverId: { type: mongoose.Schema.Types.ObjectId, ref: "Server", required: true },
-    roles: [{ type: mongoose.Schema.Types.ObjectId }], // IDs referencing Server.roles (if normalized) OR Strings if embedded? 
-    // Since roles are embedded in Server, we can store the Role _id here.
+    roles: [{ type: mongoose.Schema.Types.ObjectId }], 
+    
     nickname: { type: String },
     joinedAt: { type: Date, default: Date.now },
 },{timestamps:true});

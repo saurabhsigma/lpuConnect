@@ -15,7 +15,6 @@ export async function GET(req: Request, props: { params: Promise<{ channelId: st
         const { channelId } = params;
         await dbConnect();
 
-        // Ensure user has access to this channel (is member of the server)
         const channel = await Channel.findById(channelId);
         if (!channel) return NextResponse.json({ message: "Channel not found" }, { status: 404 });
 
@@ -23,8 +22,7 @@ export async function GET(req: Request, props: { params: Promise<{ channelId: st
         if (!membership) return NextResponse.json({ message: "Access Denied" }, { status: 403 });
 
         const messages = await Message.find({ channelId })
-            .sort({ createdAt: 1 }) // Oldest first for chat history? Or Newest first for infinite scroll?
-            // Usually chat apps load last 50, so sort -1 then reverse in UI, or sort 1 if paging from bottom.
+            .sort({ createdAt: 1 }) 
             .populate("senderId", "name image")
             .limit(50);
 
@@ -50,7 +48,6 @@ export async function POST(req: Request, props: { params: Promise<{ channelId: s
         const channel = await Channel.findById(channelId);
         if (!channel) return NextResponse.json({ message: "Channel not found" }, { status: 404 });
 
-        // Get Member ID
         const member = await ServerMembers.findOne({ serverId: channel.serverId, userId: session.user.id });
         if (!member) return NextResponse.json({ message: "Access Denied" }, { status: 403 });
 

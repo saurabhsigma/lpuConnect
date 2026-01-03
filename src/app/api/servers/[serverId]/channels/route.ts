@@ -35,8 +35,7 @@ export async function POST(req: Request, props: { params: Promise<{ serverId: st
         // TODO: iterate membership.roles and check for MANAGE_CHANNELS permission
         
         if (!isOwner) {
-             // return NextResponse.json({ message: "Insufficient Permissions" }, { status: 403 });
-             // Permitting for MVP ease unless requested strict
+             return NextResponse.json({ message: "Insufficient Permissions" }, { status: 403 });
         }
         
         const channel = await Channel.create({

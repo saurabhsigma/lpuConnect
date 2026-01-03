@@ -12,15 +12,13 @@ export async function GET(req: Request) {
 
         await dbConnect();
 
-        // 1. Get IDs of joined servers
         const joined = await ServerMembers.find({ userId: session.user.id }).select("serverId");
         const joinedIds = joined.map((j: any) => j.serverId);
 
-        // 2. Find PUBLIC servers NOT in joinedIds
         const publicServers = await Server.find({
             _id: { $nin: joinedIds },
             visibility: "public"
-        }).limit(20); // Limit results
+        }).limit(20); 
 
         return NextResponse.json(publicServers, { status: 200 });
 
