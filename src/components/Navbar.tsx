@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { User, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
 import clsx from "clsx";
+import Avatar from "./Avatar";
 
 export function Navbar() {
     const { data: session } = useSession();
@@ -53,13 +54,11 @@ export function Navbar() {
                                 href="/profile"
                                 className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
                             >
-                                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-                                    {session.user?.image ? (
-                                        <img src={session.user.image} alt={session.user.name || "User"} className="w-8 h-8 rounded-full object-cover" />
-                                    ) : (
-                                        <User size={16} />
-                                    )}
-                                </div>
+                                <Avatar 
+                                    avatarId={session.user?.avatar} 
+                                    name={session.user?.name || undefined}
+                                    size="sm"
+                                />
                                 <span>{session.user?.name}</span>
                             </Link>
                             <button
@@ -117,7 +116,11 @@ export function Navbar() {
                                 onClick={() => setIsOpen(false)}
                                 className="flex items-center gap-2 py-2 text-muted-foreground"
                             >
-                                <User size={18} />
+                                <Avatar 
+                                    avatarId={session.user?.avatar} 
+                                    name={session.user?.name || undefined}
+                                    size="sm"
+                                />
                                 Profile
                             </Link>
                             <button

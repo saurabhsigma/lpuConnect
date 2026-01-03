@@ -36,13 +36,14 @@ export async function PUT(req: Request) {
         }
 
         const data = await req.json();
-        const { bio, courses, interests, socialLinks } = data;
+        const { avatar, bio, courses, interests, socialLinks } = data;
 
         await dbConnect();
 
         const updatedUser = await User.findOneAndUpdate(
             { email: session.user.email },
             {
+                avatar,
                 bio,
                 courses: typeof courses === 'string' ? courses.split(',').map((s: string) => s.trim()) : courses,
                 interests: typeof interests === 'string' ? interests.split(',').map((s: string) => s.trim()) : interests,

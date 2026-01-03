@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Calendar, Users, Clock, MapPin } from "lucide-react";
+import { getAllAvatars } from "@/lib/avatars";
 
 interface Event {
   _id: string;
@@ -16,6 +17,7 @@ interface Event {
 
 export default function Home() {
   const [topEvents, setTopEvents] = useState<Event[]>([]);
+  const allAvatars = getAllAvatars();
 
   useEffect(() => {
     fetchTopEvents();
@@ -42,11 +44,72 @@ export default function Home() {
         <h1 className="relative z-10 text-6xl md:text-8xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-400 to-secondary animate-in fade-in slide-in-from-bottom-4 duration-1000">
           Campus Connect
         </h1>
-        <p className="relative z-10 mt-6 text-xl md:text-2xl text-muted-foreground max-w-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-          Your ultimate university companion. Connect, trade, explore, and thrive at LPU.
-        </p>
+        <br /> <br />
+        
+        {/* Animated Avatar Network */}
+        <div className="relative z-10 mt-12 mb-8 h-48 w-full max-w-4xl">
+          <div className="absolute inset-0 flex items-center justify-center">
+            {allAvatars.map((avatar, index) => {
+              const angle = (index / allAvatars.length) * Math.PI * 2;
+              const radius = 120;
+              const x = Math.cos(angle) * radius;
+              const y = Math.sin(angle) * radius;
+              
+              return (
+                <div
+                  key={avatar.id}
+                  className="absolute w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 backdrop-blur-sm border-2 border-primary/30 flex items-center justify-center text-3xl animate-float shadow-lg"
+                  style={{
+                    left: `calc(50% + ${x}px)`,
+                    top: `calc(50% + ${y}px)`,
+                    transform: 'translate(-50%, -50%)',
+                    animationDelay: `${index * 0.1}s`,
+                    animationDuration: `${3 + (index % 3)}s`,
+                  }}
+                >
+                  {avatar.emoji}
+                </div>
+              );
+            })}
+            
+            {/* Center connecting node */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-4xl animate-pulse shadow-xl shadow-primary/50">
+              🌐
+            </div>
+            
+            {/* Connection lines */}
+            <svg className="absolute inset-0 w-full h-full opacity-20">
+              {allAvatars.map((_, index) => {
+                const angle = (index / allAvatars.length) * Math.PI * 2;
+                const radius = 120;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                
+                return (
+                  <line
+                    key={index}
+                    x1="50%"
+                    y1="50%"
+                    x2={`calc(50% + ${x}px)`}
+                    y2={`calc(50% + ${y}px)`}
+                    stroke="url(#gradient)"
+                    strokeWidth="2"
+                    className="animate-pulse"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  />
+                );
+              })}
+              <defs>
+                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="rgb(147, 51, 234)" />
+                  <stop offset="100%" stopColor="rgb(236, 72, 153)" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
 
-        <div className="relative z-10 mt-10 flex gap-4 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
+        {/* <div className="relative z-10 mt-10 flex gap-4 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
           <a
             href="/auth/signup"
             className="px-8 py-3 rounded-full bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all shadow-lg shadow-primary/25"
@@ -59,7 +122,7 @@ export default function Home() {
           >
             Sign In
           </a>
-        </div>
+        </div> */}
       </section>
 
       {/* Top Events Section */}
