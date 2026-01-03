@@ -517,7 +517,7 @@ export default function ProductDetailPage() {
                                 </div>
                             )}
                             
-                            {product.bids.length > 0 && !isAdmin && !session?.user?.bids?.some((bid: any) => product.bids.some((b: any) => b.userId._id === session.user.id)) && (
+                            {product.bids.length > 0 && !isAdmin && !isSeller && !product.bids.some((b: any) => b.userId._id === session?.user?.id) && (
                                 <div className="p-4 bg-muted/30 rounded-lg text-center">
                                     <p className="text-muted-foreground text-sm">{product.bids.length} bid{product.bids.length !== 1 ? 's' : ''} placed</p>
                                 </div>
