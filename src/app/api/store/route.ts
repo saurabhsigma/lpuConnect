@@ -8,8 +8,8 @@ import User from "@/models/User"; // Ensure User is registered
 export async function GET(req: Request) {
     try {
         await dbConnect();
-        // Fetch products and populate seller details (name, image)
-        const products = await Product.find({ status: 'available' })
+        // Fetch all products (not just available) and populate seller details
+        const products = await Product.find()
             .sort({ createdAt: -1 })
             .populate('sellerId', 'name image');
 

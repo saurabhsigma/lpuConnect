@@ -326,12 +326,13 @@ export default function EventDetailPage() {
                     </div>
                 </div>
 
-                {/* Attendees */}
-                {event.attendees.length > 0 && (
+                {/* Attendees - Admin Only */}
+                {isAdmin && event.attendees.length > 0 && (
                     <div className="glass-card p-6 rounded-2xl">
                         <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
                             <Users size={20} className="text-green-400" />
                             Attendees ({event.attendees.length})
+                            <span className="text-xs px-2 py-0.5 bg-primary/20 text-primary rounded-full">Admin View</span>
                         </h2>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             {event.attendees.map(attendee => (

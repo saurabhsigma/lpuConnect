@@ -106,7 +106,11 @@ export default function StorePage() {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {filteredProducts.map(product => (
-                            <div key={product._id} className="glass-card rounded-xl overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
+                            <Link 
+                                key={product._id} 
+                                href={`/store/${product._id}`}
+                                className="glass-card rounded-xl overflow-hidden group hover:scale-[1.02] transition-transform duration-300"
+                            >
                                 {/* Image Placeholder */}
                                 <div className="h-48 bg-muted/50 relative overflow-hidden flex items-center justify-center">
                                     {product.image ? (
@@ -115,7 +119,7 @@ export default function StorePage() {
                                         <ShoppingBag className="h-12 w-12 text-muted-foreground/30" />
                                     )}
                                     <div className="absolute top-2 right-2 px-2 py-1 bg-black/50 backdrop-blur rounded text-xs text-white font-medium">
-                                        ${product.price}
+                                        ₹{product.price}
                                     </div>
                                 </div>
 
@@ -132,7 +136,7 @@ export default function StorePage() {
                                         <span className="text-xs text-muted-foreground">{product.sellerId?.name || "Unknown Seller"}</span>
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 )}
