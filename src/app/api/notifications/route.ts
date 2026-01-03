@@ -9,9 +9,10 @@ export async function GET(request: NextRequest) {
         const session = await getServerSession(authOptions);
 
         if (!session) {
+            // Return empty notifications instead of 401 error
             return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 }
+                { notifications: [], unreadCount: 0 },
+                { status: 200 }
             );
         }
 

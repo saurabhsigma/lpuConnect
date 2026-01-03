@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useSession } from "next-auth/react";
 import { Bell, X, Check, CheckCheck } from "lucide-react";
 import Link from "next/link";
 
@@ -17,6 +18,7 @@ interface Notification {
 }
 
 export default function NotificationCenter() {
+    const { data: session, status } = useSession();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
@@ -24,12 +26,15 @@ export default function NotificationCenter() {
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        fetchNotifications();
+        // Only fetch if user is authenticated
+        if (status === "authenticated" && session?.user?.id) {
+            fetchNotifications();
 
-        // Refresh every 30 seconds
-        const interval = setInterval(fetchNotifications, 30000);
-        return () => clearInterval(interval);
-    }, []);
+            // Refresh every 30 seconds
+            const interval = setInterval(fetchNotifications, 30000);
+            return () => clearInterval(interval);
+        }
+    }, [status, session?.user?.id]);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -45,12 +50,26 @@ export default function NotificationCenter() {
     }, [isOpen]);
 
     const fetchNotifications = async () => {
+        if (status !== "authenticated") return;
+        
         try {
-            const res = await fetch("/api/notifications?limit=5");
+            const res = await fetch("/api/notifications?limit=5", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            });
+            
             if (res.ok) {
                 const data = await res.json();
-                setNotifications(data.notifications);
-                setUnreadCount(data.unreadCount);
+                setNotifications(data.notifications || []);
+                setUnreadCount(data.unreadCount || 0);
+            } else if (res.status === 401) {
+                // User not authenticated
+                console.warn("User not authenticated for notifications");
+            } else {
+                console.error(`Notifications API error: ${res.status}`);
             }
         } catch (error) {
             console.error("Failed to fetch notifications:", error);
@@ -59,8 +78,14 @@ export default function NotificationCenter() {
 
     const markAsRead = async (notificationId: string) => {
         try {
-            await fetch(`/api/notifications?id=${notificationId}`, { method: "PATCH" });
-            await fetchNotifications();
+            const res = await fetch(`/api/notifications?id=${notificationId}`, {
+                method: "PATCH",
+                credentials: "include",
+            });
+            
+            if (res.ok) {
+                await fetchNotifications();
+            }
         } catch (error) {
             console.error("Failed to mark as read:", error);
         }
@@ -70,12 +95,16 @@ export default function NotificationCenter() {
         try {
             const unreadIds = notifications.filter(n => !n.read).map(n => n._id);
             if (unreadIds.length > 0) {
-                await fetch("/api/notifications", {
+                const res = await fetch("/api/notifications", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
+                    credentials: "include",
                     body: JSON.stringify({ notificationIds: unreadIds }),
                 });
-                await fetchNotifications();
+                
+                if (res.ok) {
+                    await fetchNotifications();
+                }
             }
         } catch (error) {
             console.error("Failed to mark all as read:", error);
@@ -94,6 +123,11 @@ export default function NotificationCenter() {
             default: return 'from-gray-500 to-gray-600';
         }
     };
+
+    // Don't render if not authenticated
+    if (status !== "authenticated") {
+        return null;
+    }
 
     return (
         <div className="relative" ref={dropdownRef}>
