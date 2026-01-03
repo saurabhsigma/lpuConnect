@@ -73,13 +73,28 @@ export default function CommunityPage() {
     const filteredPosts = category === 'General' && posts.length > 0 ? posts : posts.filter(p => p.category === category);
 
     return (
-        <div className="min-h-screen bg-background p-4 md:p-8">
-            <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="min-h-screen bg-background">
+            {/* Header */}
+            <div className="relative px-4 md:px-8 pt-8 pb-12 md:pt-16 md:pb-20 bg-gradient-to-br from-purple-500/10 via-background to-pink-500/10 border-b border-border">
+                <div className="max-w-4xl mx-auto">
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center">
+                            <MessageSquare className="text-white" size={24} />
+                        </div>
+                        <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+                            Community Hub
+                        </h1>
+                    </div>
+                    <p className="text-muted-foreground text-lg max-w-2xl">Connect with students, share ideas, and build meaningful discussions around campus life.</p>
+                </div>
+            </div>
+
+            <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-4 md:px-8 py-8 md:py-12">
 
                 {/* Sidebar / Filters */}
                 <div className="md:col-span-1 space-y-4">
-                    <div className="glass-card p-4 rounded-xl sticky top-24">
-                        <h2 className="font-bold text-lg mb-4 flex items-center gap-2"><MessageSquare size={18} className="text-primary" /> Topics</h2>
+                    <div className="glass-card p-4 rounded-2xl sticky top-24 border border-border/50">
+                        <h2 className="font-bold text-lg mb-4 flex items-center gap-2"><MessageSquare size={18} className="text-purple-400" /> Topics</h2>
                         <div className="space-y-2">
                             {categories.map(cat => (
                                 <button
@@ -99,13 +114,9 @@ export default function CommunityPage() {
 
                 {/* Main Feed */}
                 <div className="md:col-span-3 space-y-6">
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
-                        Community Hub
-                    </h1>
-
                     {/* Post Input */}
                     {session ? (
-                        <div className="glass-card p-4 rounded-xl">
+                        <div className="glass-card p-6 rounded-2xl border border-border/50">
                             <form onSubmit={handlePost}>
                                 <textarea
                                     className="w-full bg-input rounded-lg p-3 border border-border text-foreground focus:ring-1 focus:ring-primary outline-none min-h-[100px] resize-none placeholder:text-muted-foreground"
@@ -132,21 +143,33 @@ export default function CommunityPage() {
                             </form>
                         </div>
                     ) : (
-                        <div className="glass-card p-6 rounded-xl text-center">
-                            <p className="text-muted-foreground mb-4">Join the conversation.</p>
-                            <Link href="/auth/signin" className="px-6 py-2 rounded-full bg-primary text-primary-foreground font-medium">Sign In to Post</Link>
+                        <div className="glass-card p-8 rounded-2xl text-center border-2 border-dashed border-border/50">
+                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500/10 to-pink-500/10 flex items-center justify-center mx-auto mb-4">
+                                <MessageSquare size={32} className="text-purple-400/50" />
+                            </div>
+                            <p className="text-foreground font-semibold text-lg mb-2">Join the Conversation</p>
+                            <p className="text-muted-foreground mb-6">Sign in to post, comment, and engage with the community</p>
+                            <Link href="/auth/signin" className="inline-block px-6 py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:shadow-lg hover:shadow-purple-500/40 transition-all">Sign In</Link>
                         </div>
                     )}
 
                     {/* Posts List */}
                     {loading ? (
-                        <div className="text-center py-10 text-muted-foreground">Loading discussions...</div>
+                        <div className="text-center py-16">
+                            <div className="animate-pulse text-muted-foreground text-lg">Loading discussions...</div>
+                        </div>
                     ) : filteredPosts.length === 0 ? (
-                        <div className="text-center py-10 text-muted-foreground glass-card rounded-xl">No posts in this category yet. Say hello!</div>
+                        <div className="text-center py-16 glass-card rounded-2xl border-2 border-dashed border-border/50">
+                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500/10 to-pink-500/10 flex items-center justify-center mx-auto mb-4">
+                                <MessageSquare size={32} className="text-purple-400/50" />
+                            </div>
+                            <p className="text-foreground font-semibold text-lg mb-2">No posts yet</p>
+                            <p className="text-muted-foreground">Be the first to say hello in this category!</p>
+                        </div>
                     ) : (
                         <div className="space-y-4">
-                            {filteredPosts.map(post => (
-                                <div key={post._id} className="glass-card p-6 rounded-xl space-y-4 animate-in fade-in slide-in-from-bottom-2">
+                            {filteredPosts.map((post, idx) => (
+                                <div key={post._id} className="glass-card p-6 rounded-2xl space-y-4 animate-in fade-in slide-in-from-bottom-2 border border-border/50 hover:shadow-lg transition-all duration-300" style={{ animationDelay: `${idx * 50}ms` }}>
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary font-bold">
                                             {post.authorId?.name?.[0] || <User size={18} />}
