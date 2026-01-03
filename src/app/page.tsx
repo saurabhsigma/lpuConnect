@@ -1,65 +1,184 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Calendar, Users, Clock, MapPin } from "lucide-react";
+
+interface Event {
+  _id: string;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  attendees: string[];
+  image?: string;
+}
 
 export default function Home() {
+  const [topEvents, setTopEvents] = useState<Event[]>([]);
+
+  useEffect(() => {
+    fetchTopEvents();
+  }, []);
+
+  const fetchTopEvents = async () => {
+    try {
+      const res = await fetch("/api/events");
+      if (res.ok) {
+        const data = await res.json();
+        setTopEvents(data.slice(0, 3)); // Top 3 events by attendance
+      }
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
+    <main className="min-h-screen bg-background text-foreground flex flex-col">
+      {/* Hero Section */}
+      <section className="relative flex flex-col items-center justify-center min-h-[80vh] px-4 text-center overflow-hidden">
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-primary/20 via-background to-secondary/20 opacity-50 blur-3xl" />
+
+        <h1 className="relative z-10 text-6xl md:text-8xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-400 to-secondary animate-in fade-in slide-in-from-bottom-4 duration-1000">
+          Campus Connect
+        </h1>
+        <p className="relative z-10 mt-6 text-xl md:text-2xl text-muted-foreground max-w-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+          Your ultimate university companion. Connect, trade, explore, and thrive at LPU.
+        </p>
+
+        <div className="relative z-10 mt-10 flex gap-4 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
           <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/auth/signup"
+            className="px-8 py-3 rounded-full bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all shadow-lg shadow-primary/25"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
+            Get Started
           </a>
           <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/auth/signin"
+            className="px-8 py-3 rounded-full bg-secondary/10 border border-secondary/20 text-secondary font-semibold hover:bg-secondary/20 transition-all backdrop-blur-sm"
           >
-            Documentation
+            Sign In
           </a>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* Top Events Section */}
+      {topEvents.length > 0 && (
+        <section className="py-20 px-4 max-w-7xl mx-auto w-full z-10">
+          <div className="flex justify-between items-center mb-12">
+            <div>
+              <h2 className="text-3xl md:text-5xl font-bold">
+                Trending Events
+              </h2>
+              <p className="text-muted-foreground mt-2">Most popular events happening soon</p>
+            </div>
+            <Link 
+              href="/events" 
+              className="px-6 py-2 rounded-full bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-all"
+            >
+              View All
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {topEvents.map((event) => (
+              <Link
+                key={event._id}
+                href={`/events/${event._id}`}
+                className="glass-card rounded-2xl overflow-hidden hover:scale-105 transition-transform duration-300"
+              >
+                <div className="relative h-48 bg-muted/50">
+                  {event.image ? (
+                    <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-muted-foreground">
+                      <Calendar size={48} className="opacity-20" />
+                    </div>
+                  )}
+                  <div className="absolute top-3 right-3 bg-green-500/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-white flex items-center gap-1">
+                    <Users size={14} />
+                    {event.attendees.length}
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold mb-3 line-clamp-1">{event.title}</h3>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <p className="flex items-center gap-2">
+                      <Calendar size={14} className="text-primary" />
+                      {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Clock size={14} className="text-secondary" />
+                      {event.time}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <MapPin size={14} className="text-accent" />
+                      {event.location}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Features Grid */}
+      <section className="py-20 px-4 max-w-7xl mx-auto w-full z-10">
+        <h2 className="text-3xl md:text-5xl font-bold text-center mb-16">
+          Everything you need is here.
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {[
+            {
+              title: "Surplus Store",
+              description: "Buy and sell used textbooks, gadgets, and more with trusted peers.",
+              icon: "🛍️",
+              color: "bg-blue-500/10 border-blue-500/20 text-blue-400",
+              href: "/store",
+            },
+            {
+              title: "Hoodmaps",
+              description: "Discover hidden gems, rate hostels, and navigate campus like a pro.",
+              icon: "🗺️",
+              color: "bg-green-500/10 border-green-500/20 text-green-400",
+              href: "/hoodmaps",
+            },
+            {
+              title: "Event Feed",
+              description: "Never miss a campus event. RSVP and see who's going.",
+              icon: "📅",
+              color: "bg-orange-500/10 border-orange-500/20 text-orange-400",
+              href: "/events",
+            },
+            {
+              title: "Community",
+              description: "Join discussions, clubs, and connect with students sharing your interests.",
+              icon: "💬",
+              color: "bg-purple-500/10 border-purple-500/20 text-purple-400",
+              href: "/community",
+            },
+            {
+              title: "Student Profiles",
+              description: "Showcase your skills, courses, and connect with potential study buddies.",
+              icon: "👤",
+              color: "bg-pink-500/10 border-pink-500/20 text-pink-400",
+              href: "/profile",
+            },
+          ].map((feature, i) => (
+            <Link
+              key={i}
+              href={feature.href}
+              className={`p-8 rounded-2xl border backdrop-blur-sm hover:scale-105 transition-transform duration-300 ${feature.color}`}
+            >
+              <div className="text-4xl mb-4">{feature.icon}</div>
+              <h3 className="text-xl font-bold mb-2 text-foreground">{feature.title}</h3>
+              <p className="text-muted-foreground">{feature.description}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </main>
   );
 }
