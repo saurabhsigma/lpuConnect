@@ -1,0 +1,712 @@
+================================================================================
+                    LPU CONNECT - PROJECT EXPLANATION
+================================================================================
+
+PROJECT NAME: LPU Connect
+VERSION: 0.1.0
+DESCRIPTION: A comprehensive campus community platform for LPU (Lovely Professional 
+University) students to connect, share, buy/sell items, discover events, and build 
+meaningful relationships within the campus ecosystem.
+
+================================================================================
+                        PROJECT OVERVIEW
+================================================================================
+
+LPU Connect is a full-stack web application built with modern technologies that 
+serves as an all-in-one platform for campus life. The platform enables students to:
+
+1. Discover and attend campus events
+2. Buy and sell surplus items (books, gadgets, furniture, etc.)
+3. Engage in community discussions and forums
+4. Create and manage student profiles
+5. Navigate campus hotspots and rate locations
+6. Connect with peers and build meaningful friendships
+
+================================================================================
+                      TECHNOLOGY STACK
+================================================================================
+
+FRONTEND:
+- Framework: Next.js 16.1.1 (React 19.2.3) with App Router
+- Styling: Tailwind CSS 3.4.19 with CSS variables
+- UI Components: Lucide React icons (0.562.0)
+- Animations: Framer Motion 12.23.26
+- Authentication: NextAuth 4.24.13 with JWT strategy
+- Language: TypeScript 5
+
+BACKEND:
+- Runtime: Node.js with Next.js API routes
+- Database: MongoDB 5.x with Mongoose ODM 9.1.1
+- Authentication: NextAuth with Credentials provider and JWT tokens
+- Security: bcryptjs 3.0.3 for password hashing
+
+BUILD & TOOLING:
+- Build Tool: Turbopack (integrated with Next.js 16.1.1)
+- Linting: ESLint 9
+- CSS Processing: PostCSS 8.5.6, Autoprefixer 10.4.23
+- Utility Libraries: clsx 2.1.1, tailwind-merge 3.4.0
+
+================================================================================
+                      PROJECT STRUCTURE
+================================================================================
+
+/lpuconnect
+├── src/
+│   ├── app/                          # Next.js App Router
+│   │   ├── globals.css               # Global styles and animations
+│   │   ├── layout.tsx                # Root layout with theme provider
+│   │   ├── page.tsx                  # Homepage with hero section
+│   │   ├── api/                      # API routes
+│   │   │   ├── auth/
+│   │   │   │   ├── [...nextauth]/    # NextAuth configuration
+│   │   │   │   └── register/         # User registration endpoint
+│   │   │   ├── admin/
+│   │   │   │   └── delete/           # Master admin delete endpoint
+│   │   │   ├── community/            # Community posts endpoints
+│   │   │   ├── events/               # Events management endpoints
+│   │   │   ├── hoodmaps/             # Location/hotspot endpoints
+│   │   │   ├── profile/              # User profile management
+│   │   │   └── store/                # Product listing and bidding
+│   │   ├── auth/
+│   │   │   ├── signin/page.tsx       # Login page
+│   │   │   └── signup/page.tsx       # Registration page
+│   │   ├── community/page.tsx        # Community forum page
+│   │   ├── events/                   # Events management
+│   │   │   ├── page.tsx              # Events listing
+│   │   │   ├── new/page.tsx          # Create event form
+│   │   │   └── [id]/page.tsx         # Event detail page
+│   │   ├── hoodmaps/page.tsx         # Location discovery page
+│   │   ├── profile/page.tsx          # User profile management
+│   │   ├── store/                    # Surplus store
+│   │   │   ├── page.tsx              # Product listing
+│   │   │   ├── new/page.tsx          # Create product form
+│   │   │   └── [id]/page.tsx         # Product detail with bidding
+│   ├── components/
+│   │   ├── Navbar.tsx                # Navigation bar with theme toggle
+│   │   ├── Avatar.tsx                # Avatar display component
+│   │   ├── Providers.tsx             # Client-side providers
+│   │   ├── ThemeProvider.tsx         # Dark/light theme context
+│   │   └── ui/                       # Reusable UI components
+│   ├── lib/
+│   │   ├── auth.ts                   # NextAuth configuration
+│   │   ├── db.ts                     # MongoDB connection
+│   │   └── avatars.ts                # Avatar constants and utilities
+│   ├── models/                       # Mongoose schemas
+│   │   ├── Event.ts                  # Event model with attendees
+│   │   ├── Location.ts               # Location/hotspot model
+│   │   ├── Post.ts                   # Community post model
+│   │   ├── Product.ts                # Product model with bidding
+│   │   └── User.ts                   # User profile model
+│   ├── types/
+│   │   └── next-auth.d.ts            # NextAuth type extensions
+│   └── public/                       # Static assets
+├── package.json                      # Dependencies
+├── tsconfig.json                     # TypeScript configuration
+├── tailwind.config.ts                # Tailwind CSS configuration
+├── next.config.ts                    # Next.js configuration
+├── postcss.config.js                 # PostCSS configuration
+├── eslint.config.mjs                 # ESLint configuration
+└── .env.example                      # Environment variables template
+
+================================================================================
+                      KEY FEATURES
+================================================================================
+
+1. AUTHENTICATION & AUTHORIZATION
+   - Credential-based authentication with email/password
+   - JWT-based session management
+   - Role-based access control (student, admin, moderator)
+   - Password hashing with bcryptjs
+   - Session persistence across page reloads
+   - Sign in/Sign up pages with form validation
+
+2. USER PROFILES
+   - User information management (name, email, bio, courses, interests)
+   - Social media links (LinkedIn, GitHub, Twitter, Instagram)
+   - Avatar system with 10 emoji-based avatar options
+   - Profile photo support
+   - Session-based profile updates
+
+3. EVENTS MANAGEMENT
+   - Create, view, and manage campus events
+   - Event details: title, description, date, time, location, image
+   - RSVP functionality with attendance tracking
+   - Event organizer visibility and edit capabilities
+   - Admin-only attendees list viewing
+   - Shareable event URLs
+   - Attendance-based event sorting (trending events)
+   - Calendar integration for date selection
+
+4. SURPLUS STORE (Buy/Sell)
+   - Product listing with images, price, and category
+   - Bidding system for products
+   - Bid status tracking (available, in-bid, sold)
+   - Admin/seller edit and delete capabilities
+   - Buyer-seller communication through bidding
+   - Admin visibility of all bids
+   - Buyer visibility of own bids
+   - Currency: Indian Rupees (₹)
+   - Product categories (Textbooks, Electronics, Furniture, Clothing, Other)
+
+5. COMMUNITY FORUM
+   - Post creation and discussion threads
+   - Category-based organization (General, Clubs, Academic, Events, Other)
+   - Like/heart functionality
+   - Comments on posts
+   - User attribution with author details
+   - Real-time post loading and refresh
+
+6. HOOD MAPS (Location Discovery)
+   - Location/hotspot discovery
+   - Hostel and residential area information
+   - Rating system for locations
+   - Community reviews and recommendations
+   - Location coordinates and navigation support
+
+7. THEMING SYSTEM
+   - Dark mode (default) and light mode support
+   - System preference detection
+   - localStorage persistence
+   - Smooth theme transitions
+   - CSS variables for dynamic theming
+   - Glassmorphism effects adjusted per theme
+
+8. VISUAL ENHANCEMENTS
+   - Modern UI with rounded corners and gradients
+   - Lucide React icons throughout
+   - Smooth animations and transitions
+   - Hover effects on interactive elements
+   - Loading states with animations
+   - Empty state illustrations
+   - Responsive design (mobile, tablet, desktop)
+   - Color-coded icons for information types
+
+================================================================================
+                      DATA MODELS
+================================================================================
+
+USER MODEL (User.ts)
+{
+  _id: ObjectId (Primary Key)
+  name: String (Required)
+  email: String (Required, Unique)
+  password: String (Required, Hashed)
+  image: String (Profile photo URL)
+  avatar: String (Emoji avatar ID, default: 'boy1')
+  role: String (Enum: 'student'|'admin'|'moderator', default: 'student')
+  bio: String (Max 200 chars)
+  courses: [String] (Array of course names)
+  interests: [String] (Array of interest tags)
+  socialLinks: {
+    linkedin: String,
+    github: String,
+    twitter: String,
+    instagram: String
+  }
+  createdAt: Date (Auto-generated)
+}
+
+EVENT MODEL (Event.ts)
+{
+  _id: ObjectId (Primary Key)
+  title: String (Required)
+  description: String
+  date: Date (Required)
+  time: String (Required, HH:MM format)
+  location: String (Required)
+  image: String (Event image URL)
+  organizerId: ObjectId (Ref: User, Required)
+  attendees: [ObjectId] (Ref: User, Array of attendee IDs)
+  createdAt: Date (Auto-generated)
+}
+
+PRODUCT MODEL (Product.ts)
+{
+  _id: ObjectId (Primary Key)
+  name: String (Required)
+  price: Number (Required)
+  description: String
+  category: String (Enum: Textbooks|Electronics|Furniture|Clothing|Other)
+  image: String (Product image URL)
+  sellerId: ObjectId (Ref: User, Required)
+  status: String (Enum: available|in-bid|sold, default: available)
+  bids: [{
+    userId: ObjectId (Ref: User),
+    amount: Number,
+    message: String,
+    createdAt: Date
+  }]
+  createdAt: Date (Auto-generated)
+}
+
+POST MODEL (Post.ts)
+{
+  _id: ObjectId (Primary Key)
+  content: String (Required)
+  category: String (Enum: General|Clubs|Academic|Events|Other)
+  authorId: ObjectId (Ref: User, Required)
+  likes: [ObjectId] (Array of user IDs who liked)
+  comments: [{
+    userId: ObjectId (Ref: User),
+    text: String,
+    createdAt: Date
+  }]
+  createdAt: Date (Auto-generated)
+}
+
+LOCATION MODEL (Location.ts)
+{
+  _id: ObjectId (Primary Key)
+  name: String (Required)
+  type: String (hostel|cafe|library|sports|other)
+  description: String
+  latitude: Number
+  longitude: Number
+  ratings: [Number] (Array of ratings 1-5)
+  reviews: [{
+    userId: ObjectId (Ref: User),
+    text: String,
+    rating: Number,
+    createdAt: Date
+  }]
+  createdAt: Date (Auto-generated)
+}
+
+================================================================================
+                      API ENDPOINTS
+================================================================================
+
+AUTHENTICATION:
+POST /api/auth/register              - Register new user
+POST /api/auth/signin                - Login with credentials
+GET  /api/auth/session               - Get current session
+POST /api/auth/signout               - Logout
+POST /api/auth/callback/credentials  - NextAuth callback
+
+EVENTS:
+GET  /api/events                     - Get all events
+POST /api/events                     - Create event (auth required)
+GET  /api/events/[id]                - Get event details
+PUT  /api/events/[id]                - Update event (organizer only)
+DELETE /api/events/[id]              - Delete event (organizer/admin only)
+POST /api/events/[id]/rsvp           - RSVP/unRSVP for event
+
+STORE:
+GET  /api/store                      - Get all products
+POST /api/store                      - List new product (auth required)
+GET  /api/store/[id]                 - Get product details
+PUT  /api/store/[id]                 - Update product (seller/admin only)
+DELETE /api/store/[id]               - Delete product (seller/admin only)
+POST /api/store/[id]/bid             - Place bid on product
+
+COMMUNITY:
+GET  /api/community                  - Get all posts
+POST /api/community                  - Create post (auth required)
+PUT  /api/community/[id]             - Update post (author/admin only)
+DELETE /api/community/[id]           - Delete post (author/admin only)
+
+PROFILE:
+GET  /api/profile                    - Get user profile (auth required)
+PUT  /api/profile                    - Update profile (auth required)
+
+HOODMAPS:
+GET  /api/hoodmaps                   - Get all locations
+POST /api/hoodmaps                   - Add location (admin only)
+PUT  /api/hoodmaps/[id]              - Update location (admin only)
+POST /api/hoodmaps/[id]/review       - Add review/rating
+
+ADMIN:
+POST /api/admin/delete               - Delete any content (admin/moderator only)
+                                       Body: { type: 'event'|'product'|'post', id: string }
+
+================================================================================
+                      AUTHENTICATION FLOW
+================================================================================
+
+1. USER REGISTRATION:
+   - User fills registration form with name, email, password
+   - Password is hashed using bcryptjs (12 salt rounds)
+   - User record created in MongoDB
+   - User redirected to login page
+
+2. USER LOGIN:
+   - User enters email and password
+   - Password compared against stored hash
+   - JWT token generated with user data (id, email, name, role, avatar)
+   - Session stored in NextAuth callback
+   - User redirected to home page
+
+3. SESSION MANAGEMENT:
+   - JWT token expires after session duration
+   - Token payload includes: id, email, name, role, avatar
+   - Session data available via useSession() hook
+   - Session update triggers JWT refresh with trigger='update'
+   - localStorage used for theme persistence
+
+4. ROLE-BASED ACCESS:
+   - student: Default role for new users
+   - admin: Can delete any content, view all attendees/bidders
+   - moderator: Similar to admin
+
+================================================================================
+                      PERMISSION SYSTEM
+================================================================================
+
+PUBLIC ENDPOINTS:
+- View events list and details
+- View store products and details
+- View community posts
+- View hood maps and locations
+- View user profiles (limited info)
+
+AUTHENTICATED (Any User):
+- Create events
+- Create posts
+- RSVP to events
+- Place bids on products
+- Update own profile
+- View own session data
+
+OWNER/AUTHOR:
+- Edit own event
+- Edit own product listing
+- Edit own post
+- Delete own content
+
+ADMIN/MODERATOR:
+- View all event attendees (admin view)
+- View all product bidders (except other users' bids)
+- Delete any event
+- Delete any product
+- Delete any post
+- Use master delete endpoint
+
+================================================================================
+                      AVATAR SYSTEM
+================================================================================
+
+10 Avatar Options (5 Male, 5 Female):
+- boy1 🧑‍🎓 Student
+- boy2 🧑‍💻 Developer
+- boy3 🧑‍🔬 Scientist
+- boy4 🎨 Artist
+- boy5 👨‍🚀 Astronaut
+- girl1 👩‍🎓 Student
+- girl2 👩‍💻 Developer
+- girl3 👩‍🔬 Scientist
+- girl4 👩‍🎨 Artist
+- girl5 👩‍🚀 Astronaut
+
+Display Sizes:
+- sm: 32px (navbar, small lists)
+- md: 40px (default)
+- lg: 56px (profile page)
+- xl: 80px (profile hero)
+
+Avatar Selection in Profile:
+- Users can select avatar from profile page
+- Changes persist in session and database
+- Displayed in navbar (desktop and mobile)
+
+================================================================================
+                      THEME SYSTEM
+================================================================================
+
+COLOR PALETTE - DARK MODE (Default):
+- Background: #0f172a (Slate 900)
+- Foreground: #f8fafc (Slate 50)
+- Primary: #6366f1 (Indigo 500)
+- Secondary: #ec4899 (Pink 500)
+- Accent: #22d3ee (Cyan 400)
+- Muted: #1e293b (Slate 800)
+- Border: #475569 (Slate 600)
+
+COLOR PALETTE - LIGHT MODE:
+- Background: #ffffff (White)
+- Foreground: #1e293b (Slate 800)
+- Primary: #4f46e5 (Indigo 600)
+- Secondary: #db2777 (Pink 600)
+- Accent: #06b6d4 (Cyan 500)
+- Muted: #e2e8f0 (Slate 200)
+- Border: #cbd5e1 (Slate 300)
+
+FEATURES:
+- Automatic system preference detection
+- Manual toggle button in navbar
+- localStorage persistence (key: theme)
+- Smooth CSS transitions between themes
+- Glassmorphism adjusted per theme
+- All CSS uses CSS variables for theming
+
+================================================================================
+                      ANIMATIONS & EFFECTS
+================================================================================
+
+CUSTOM ANIMATIONS (in globals.css):
+- animate-float: Floating motion for avatars
+- animate-glow: Pulsing glow effect
+- animate-shimmer: Shimmer/shine effect
+- animate-bounce-slow: Slow bounce animation
+- animate-gradient: Gradient color shift
+- animate-pulse-glow: Combined pulse and glow
+
+TAILWIND ANIMATIONS:
+- animate-in, fade-in, slide-in: Entrance animations
+- animate-pulse: Pulsing opacity
+- hover:scale-, hover:-translate-y: Interactive transforms
+- transition-all, transition-transform: Smooth transitions
+
+INTERACTIVE EFFECTS:
+- Hover scale on cards and buttons
+- Image zoom on product/event hover
+- Gradient overlay fade on card hover
+- Color transitions on text hover
+- Shadow elevation on focus/hover
+- Border glow effects for focused elements
+
+================================================================================
+                      DEPLOYMENT & ENVIRONMENT
+================================================================================
+
+ENVIRONMENT VARIABLES REQUIRED:
+
+NEXTAUTH_URL=http://localhost:3000          # or production URL
+NEXTAUTH_SECRET=<random-secret-key>         # For JWT signing
+MONGODB_URI=mongodb://localhost:27017/campus_connect  # MongoDB connection
+
+RECOMMENDED:
+NODE_ENV=production                         # Set for production builds
+PORT=3000                                   # Server port
+
+CONFIGURATION:
+- Next.js runs on port 3000 by default
+- MongoDB runs locally on port 27017
+- API routes handled by Next.js server
+- No separate backend server needed
+
+BUILD & RUN:
+Development:  npm run dev         (http://localhost:3000)
+Build:        npm run build       (Create optimized build)
+Production:   npm run start       (Run production build)
+Lint:         npm run lint        (ESLint checks)
+
+================================================================================
+                      DEVELOPMENT WORKFLOW
+================================================================================
+
+1. DATABASE:
+   - MongoDB must be running locally (or connection URI set)
+   - Mongoose auto-connects on API calls
+   - Models automatically indexed
+
+2. FORM VALIDATION:
+   - Client-side validation in React
+   - Server-side validation in API routes
+   - Error messages displayed in UI
+
+3. IMAGE UPLOADS:
+   - Accepts image URLs (external hosting)
+   - Stored as string in database
+   - Displayed with <img> tags
+
+4. BIDDING LOGIC:
+   - Users place bids on products
+   - Product status changes: available → in-bid → sold
+   - Admin/seller can set final status
+   - Bids populate user information for visibility
+
+5. RSVP TRACKING:
+   - Attendee IDs stored in event.attendees array
+   - Optimistic UI updates for better UX
+   - Server confirms RSVP changes
+   - Attendance count updated in real-time
+
+================================================================================
+                      KNOWN FEATURES & LIMITATIONS
+================================================================================
+
+FEATURES:
+✓ Full authentication with JWT
+✓ MongoDB persistence
+✓ Role-based access control
+✓ Real-time updates (optimistic UI)
+✓ Responsive design (mobile-first)
+✓ Dark/light theme support
+✓ Avatar system with 10 options
+✓ Event management with RSVP
+✓ Product bidding system
+✓ Community forum with posts
+✓ Location/hotspot discovery
+✓ Admin content deletion
+✓ Shareable event URLs
+✓ Smooth animations and transitions
+
+CURRENT LIMITATIONS:
+- Image uploads require external hosting (no file upload endpoint)
+- No real-time notifications (polling would be needed)
+- No email notifications (would require email service)
+- No payment processing (bidding is informal)
+- No location search radius (basic listing only)
+- No direct messaging between users
+- No content moderation tools
+- Single MongoDB instance (no replication)
+
+================================================================================
+                      FUTURE IMPROVEMENTS
+================================================================================
+
+1. NOTIFICATIONS:
+   - Real-time push notifications
+   - Email notifications for events and bids
+   - In-app notification center
+
+2. MESSAGING:
+   - Direct messaging between users
+   - Chat with bid notifications
+   - Group messaging for event coordination
+
+3. PAYMENTS:
+   - Integrate Stripe/PayPal for secure payments
+   - Bid settlement system
+   - Transaction history
+
+4. MEDIA:
+   - File upload with cloud storage (AWS S3, Cloudinary)
+   - Image compression and optimization
+   - Video support for events
+
+5. SEARCH & DISCOVERY:
+   - Full-text search for products, events, posts
+   - Advanced filtering and sorting
+   - Location-based discovery with maps API
+   - Recommendation algorithm
+
+6. ANALYTICS:
+   - User engagement metrics
+   - Event attendance analytics
+   - Product popularity tracking
+   - Platform usage reports
+
+7. MODERATION:
+   - Content reporting system
+   - Admin moderation dashboard
+   - User ban/restriction system
+   - Spam detection
+
+8. PERFORMANCE:
+   - Caching with Redis
+   - Database indexing optimization
+   - CDN for static assets
+   - Request rate limiting
+
+================================================================================
+                      PROJECT STATISTICS
+================================================================================
+
+CODE METRICS:
+- Total Components: 5+
+- API Endpoints: 25+
+- Database Models: 5
+- Lines of Code (excluding node_modules): ~3000+
+- Tailwind Classes Used: 200+
+
+DEPENDENCIES:
+- Production: 10 main packages
+- Development: 8 dev packages
+- Total: 18 direct dependencies (500+ transitive)
+
+PAGES:
+- Public: 6 (home, signin, signup, events, store, community, hoodmaps)
+- Protected: 3+ (profile, create event, create product)
+- Dynamic: 4+ (event detail, product detail, etc.)
+
+================================================================================
+                      TESTING & VALIDATION
+================================================================================
+
+MANUAL TESTING AREAS:
+1. Authentication:
+   - Registration with valid/invalid inputs
+   - Login with correct/incorrect credentials
+   - Session persistence across reloads
+   - Logout functionality
+
+2. Events:
+   - Create events with all fields
+   - RSVP functionality
+   - Event listing and filtering
+   - Event detail pages
+   - Organizer edit/delete
+
+3. Store:
+   - Product listing and search
+   - Bidding on products
+   - Product detail pages
+   - Seller management
+
+4. Community:
+   - Post creation and listing
+   - Category filtering
+   - Like/comment functionality
+   - Sign-in requirement enforcement
+
+5. Theme:
+   - Dark/light mode toggle
+   - Theme persistence on reload
+   - System preference detection
+
+6. Responsive Design:
+   - Mobile (375px - 640px)
+   - Tablet (641px - 1024px)
+   - Desktop (1025px+)
+
+BUILD VALIDATION:
+- TypeScript strict mode: All files type-safe
+- ESLint: Code quality checks
+- Next.js build: No warnings or errors
+
+================================================================================
+                      GETTING STARTED
+================================================================================
+
+PREREQUISITES:
+- Node.js 18+ (check: node --version)
+- MongoDB running locally or connection URI
+- npm or yarn package manager
+
+INSTALLATION:
+1. Clone repository: git clone https://github.com/saurabhsigma/lpuConnect.git
+2. Install dependencies: npm install
+3. Configure .env.local with required variables
+4. Start MongoDB if running locally
+5. Run development server: npm run dev
+6. Open http://localhost:3000 in browser
+
+FIRST STEPS:
+1. Create account via signup page
+2. Update profile with avatar selection
+3. Browse events or products
+4. Create an event or list a product
+5. Participate in community discussions
+6. Toggle dark/light theme in navbar
+
+================================================================================
+                      CONTACT & SUPPORT
+================================================================================
+
+Repository: https://github.com/saurabhsigma/lpuConnect
+Issues: Report bugs via GitHub Issues
+Pull Requests: Submit improvements via PR
+Email: (Add contact email if available)
+
+================================================================================
+                          END OF DOCUMENT
+================================================================================
+
+Last Updated: January 4, 2026
+Document Version: 1.0
+Project Version: 0.1.0
+
+This document provides comprehensive information about the LPU Connect project
+structure, features, API endpoints, and deployment details. For more specific
+implementation details, refer to the source code comments and type definitions.

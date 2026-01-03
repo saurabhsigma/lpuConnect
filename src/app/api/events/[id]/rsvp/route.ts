@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import Event from "@/models/Event";
+import { createNotification } from "@/lib/notifications";
 
 export async function POST(
     req: Request,
@@ -24,17 +25,33 @@ export async function POST(
             return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
         }
 
-        const event = await Event.findById(id);
+        const event = await Event.findById(id).populate('organizerId', 'name');
 
         if (!event) {
             return NextResponse.json({ message: "Event not found" }, { status: 404 });
         }
 
         // Toggle RSVP
-        if (event.attendees.includes(session.user.id)) {
+        const isAttending = event.attendees.includes(session.user.id);
+        
+        if (isAttending) {
             event.attendees.pull(session.user.id);
         } else {
             event.attendees.push(session.user.id);
+            
+            // Create notification for event organizer
+            if (event.organizerId && event.organizerId._id.toString() !== session.user.id) {
+                await createNotification({
+                    userId: event.organizerId._id.toString(),
+                    type: 'event_rsvp',
+                    title: 'New RSVP',
+                    message: `Someone just RSVP'd to your event "${event.title}"`,
+                    icon: '✓',
+                    actionUrl: `/events/${id}`,
+                    relatedId: id,
+                    relatedType: 'event',
+                });
+            }
         }
 
         await event.save();

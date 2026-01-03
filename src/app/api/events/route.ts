@@ -33,7 +33,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
-        const { title, description, date, time, location, image } = await req.json();
+        const { title, description, date, time, location, image, category, tags } = await req.json();
 
         if (!title || !description || !date || !time || !location) {
             return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
@@ -49,6 +49,8 @@ export async function POST(req: Request) {
             time,
             location,
             image,
+            category: category || 'Social',
+            tags: tags || [],
         });
 
         return NextResponse.json(event, { status: 201 });

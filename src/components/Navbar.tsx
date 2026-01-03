@@ -8,6 +8,7 @@ import { useState } from "react";
 import clsx from "clsx";
 import Avatar from "./Avatar";
 import { useTheme } from "./ThemeProvider";
+import NotificationCenter from "./NotificationCenter";
 
 export function Navbar() {
     const { data: session } = useSession();
@@ -49,7 +50,8 @@ export function Navbar() {
                 </div>
 
                 {/* Auth Buttons / Profile */}
-                <div className="hidden md:flex items-center gap-4">
+                <div className="hidden md:flex items-center gap-3">
+                    {session && <NotificationCenter />}
                     <button
                         onClick={toggleTheme}
                         className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"

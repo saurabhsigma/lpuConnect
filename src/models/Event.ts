@@ -29,6 +29,16 @@ const EventSchema = new Schema({
     image: {
         type: String, // URL
     },
+    category: {
+        type: String,
+        enum: ['Tech', 'Sports', 'Arts', 'Academics', 'Social', 'Workshops', 'Networking'],
+        default: 'Social',
+    },
+    tags: [{
+        type: String,
+        lowercase: true,
+        trim: true,
+    }],
     attendees: [{
         type: Schema.Types.ObjectId,
         ref: 'User',

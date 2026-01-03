@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
+import User from "@/models/User";
+import { createNotification } from "@/lib/notifications";
 
 export async function POST(
     req: Request,
@@ -48,6 +50,23 @@ export async function POST(
         }
 
         await product.save();
+
+        // Get bidder info for notification message
+        const bidder = await User.findById(session.user.id).select('name');
+
+        // Create notification for seller (only if bidder is not the seller)
+        if (product.sellerId.toString() !== session.user.id && bidder) {
+            await createNotification({
+                userId: product.sellerId.toString(),
+                type: 'bid_received',
+                title: 'New Bid Received',
+                message: `${bidder.name} placed a bid of ₹${amount} on "${product.title}"`,
+                icon: '💰',
+                actionUrl: `/store/${id}`,
+                relatedId: id,
+                relatedType: 'product',
+            });
+        }
 
         // Return populated product with bid details
         const populatedProduct = await Product.findById(product._id)

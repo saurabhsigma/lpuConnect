@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Calendar, ArrowLeft } from "lucide-react";
+import { Calendar, ArrowLeft, X } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+
+const CATEGORIES = ['Tech', 'Sports', 'Arts', 'Academics', 'Social', 'Workshops', 'Networking'];
 
 export default function CreateEventPage() {
     const router = useRouter();
@@ -16,7 +18,10 @@ export default function CreateEventPage() {
         time: "",
         location: "",
         image: "",
+        category: "Social",
+        tags: [] as string[],
     });
+    const [tagInput, setTagInput] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -24,6 +29,27 @@ export default function CreateEventPage() {
         router.push("/auth/signin");
         return null;
     }
+
+    const addTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter" && tagInput.trim()) {
+            e.preventDefault();
+            const newTag = tagInput.toLowerCase().trim();
+            if (!formData.tags.includes(newTag)) {
+                setFormData({
+                    ...formData,
+                    tags: [...formData.tags, newTag],
+                });
+                setTagInput("");
+            }
+        }
+    };
+
+    const removeTag = (tagToRemove: string) => {
+        setFormData({
+            ...formData,
+            tags: formData.tags.filter(tag => tag !== tagToRemove),
+        });
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -102,16 +128,30 @@ export default function CreateEventPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-foreground">Location</label>
-                            <input
-                                type="text"
+                            <label className="text-sm font-medium text-foreground">Category</label>
+                            <select
                                 required
-                                value={formData.location}
-                                onChange={e => setFormData({ ...formData, location: e.target.value })}
-                                className="w-full bg-input border border-border rounded-lg p-2.5 text-foreground focus:border-primary outline-none placeholder:text-muted-foreground"
-                                placeholder="Block 38, Auditorium"
-                            />
+                                value={formData.category}
+                                onChange={e => setFormData({ ...formData, category: e.target.value })}
+                                className="w-full bg-input border border-border rounded-lg p-2.5 text-foreground focus:border-primary outline-none cursor-pointer"
+                            >
+                                {CATEGORIES.map(cat => (
+                                    <option key={cat} value={cat}>{cat}</option>
+                                ))}
+                            </select>
                         </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-foreground">Location</label>
+                        <input
+                            type="text"
+                            required
+                            value={formData.location}
+                            onChange={e => setFormData({ ...formData, location: e.target.value })}
+                            className="w-full bg-input border border-border rounded-lg p-2.5 text-foreground focus:border-primary outline-none placeholder:text-muted-foreground"
+                            placeholder="Block 38, Auditorium"
+                        />
                     </div>
 
                     <div className="space-y-2">
@@ -123,6 +163,35 @@ export default function CreateEventPage() {
                             className="w-full bg-input border border-border rounded-lg p-2.5 text-foreground focus:border-primary outline-none h-32 resize-none placeholder:text-muted-foreground"
                             placeholder="What's this event about?"
                         />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-foreground">Tags (Press Enter to add)</label>
+                        <input
+                            type="text"
+                            value={tagInput}
+                            onChange={e => setTagInput(e.target.value)}
+                            onKeyDown={addTag}
+                            className="w-full bg-input border border-border rounded-lg p-2.5 text-foreground focus:border-primary outline-none placeholder:text-muted-foreground"
+                            placeholder="Add relevant tags (e.g., JavaScript, beginners)"
+                        />
+                        <div className="flex flex-wrap gap-2 mt-2">
+                            {formData.tags.map(tag => (
+                                <div
+                                    key={tag}
+                                    className="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2 border border-primary/30"
+                                >
+                                    #{tag}
+                                    <button
+                                        type="button"
+                                        onClick={() => removeTag(tag)}
+                                        className="hover:text-red-400 transition-colors"
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="space-y-2">
@@ -139,7 +208,7 @@ export default function CreateEventPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all shadow-lg"
+                        className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all shadow-lg disabled:opacity-50"
                     >
                         {loading ? "Creating Event..." : "Create Event"}
                     </button>
