@@ -29,9 +29,21 @@ const ProductSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['available', 'sold'],
+        enum: ['available', 'in-bid', 'sold'],
         default: 'available',
     },
+    bids: [{
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+        },
+        amount: Number,
+        message: String,
+        createdAt: {
+            type: Date,
+            default: Date.now,
+        },
+    }],
     createdAt: {
         type: Date,
         default: Date.now,

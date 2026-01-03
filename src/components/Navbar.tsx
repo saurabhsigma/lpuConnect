@@ -3,14 +3,17 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { User, LogOut, Menu, X } from "lucide-react";
+import { User, LogOut, Menu, X, Moon, Sun } from "lucide-react";
 import { useState } from "react";
 import clsx from "clsx";
+import Avatar from "./Avatar";
+import { useTheme } from "./ThemeProvider";
 
 export function Navbar() {
     const { data: session } = useSession();
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
+    const { theme, toggleTheme } = useTheme();
 
     // Hide navbar on auth pages
     if (pathname?.startsWith("/auth")) return null;
@@ -47,19 +50,24 @@ export function Navbar() {
 
                 {/* Auth Buttons / Profile */}
                 <div className="hidden md:flex items-center gap-4">
+                    <button
+                        onClick={toggleTheme}
+                        className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                        title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+                    >
+                        {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+                    </button>
                     {session ? (
                         <div className="flex items-center gap-4">
                             <Link
                                 href="/profile"
                                 className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
                             >
-                                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-                                    {session.user?.image ? (
-                                        <img src={session.user.image} alt={session.user.name || "User"} className="w-8 h-8 rounded-full object-cover" />
-                                    ) : (
-                                        <User size={16} />
-                                    )}
-                                </div>
+                                <Avatar 
+                                    avatarId={session.user?.avatar} 
+                                    name={session.user?.name || undefined}
+                                    size="sm"
+                                />
                                 <span>{session.user?.name}</span>
                             </Link>
                             <button
@@ -110,6 +118,17 @@ export function Navbar() {
                         </Link>
                     ))}
                     <hr className="border-border" />
+                    <button
+                        onClick={() => {
+                            toggleTheme();
+                            setIsOpen(false);
+                        }}
+                        className="flex items-center gap-2 py-2 text-muted-foreground hover:text-primary transition-colors"
+                    >
+                        {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+                        {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                    </button>
+                    <hr className="border-border" />
                     {session ? (
                         <>
                             <Link
@@ -117,7 +136,11 @@ export function Navbar() {
                                 onClick={() => setIsOpen(false)}
                                 className="flex items-center gap-2 py-2 text-muted-foreground"
                             >
-                                <User size={18} />
+                                <Avatar 
+                                    avatarId={session.user?.avatar} 
+                                    name={session.user?.name || undefined}
+                                    size="sm"
+                                />
                                 Profile
                             </Link>
                             <button

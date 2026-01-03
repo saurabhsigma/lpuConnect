@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { User, BookOpen, Heart, Globe, Github, Linkedin, Twitter, Instagram } from "lucide-react";
+import { AVATARS, getAvatarById } from "@/lib/avatars";
 
 interface UserProfile {
     name: string;
@@ -22,7 +23,7 @@ interface UserProfile {
 }
 
 export default function ProfilePage() {
-    const { data: session, status } = useSession();
+    const { data: session, status, update } = useSession();
     const router = useRouter();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -33,6 +34,7 @@ export default function ProfilePage() {
 
     // Form State
     const [formData, setFormData] = useState({
+        avatar: "boy1",
         bio: "",
         courses: "",
         interests: "",
@@ -61,6 +63,7 @@ export default function ProfilePage() {
                 setProfile(data);
                 setPreview(data.image || null);
                 setFormData({
+                    avatar: data.avatar || "boy1",
                     bio: data.bio || "",
                     courses: data.courses?.join(", ") || "",
                     interests: data.interests?.join(", ") || "",
@@ -104,6 +107,15 @@ export default function ProfilePage() {
                 setPreview(updated.image || null);
                 setSelectedImage(null);
                 setIsEditing(false);
+                
+                // Update session with new avatar
+                await update({
+                    ...session,
+                    user: {
+                        ...session?.user,
+                        avatar: updated.avatar,
+                    }
+                });
             }
         } catch (error) {
             console.error("Error saving profile:", error);
@@ -166,8 +178,59 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {/* Left Column: Bio & Socials */}
+                    {/* Left Column: Avatar & Bio & Socials */}
                     <div className="space-y-8 md:col-span-1">
+                        {/* Avatar Selection */}
+                        {isEditing && (
+                            <div className="glass-card p-6 rounded-2xl space-y-4">
+                                <h3 className="text-lg font-semibold flex items-center gap-2">
+                                    <User size={18} className="text-primary" /> Choose Avatar
+                                </h3>
+                                <div className="space-y-4">
+                                    <div>
+                                        <p className="text-sm text-muted-foreground mb-2">Boys</p>
+                                        <div className="grid grid-cols-5 gap-2">
+                                            {AVATARS.male.map((avatar) => (
+                                                <button
+                                                    key={avatar.id}
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, avatar: avatar.id })}
+                                                    className={`w-full aspect-square rounded-xl flex items-center justify-center text-3xl transition-all ${
+                                                        formData.avatar === avatar.id
+                                                            ? 'bg-primary/20 border-2 border-primary scale-110'
+                                                            : 'bg-muted/30 hover:bg-muted/50 border border-border'
+                                                    }`}
+                                                    title={avatar.label}
+                                                >
+                                                    {avatar.emoji}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-muted-foreground mb-2">Girls</p>
+                                        <div className="grid grid-cols-5 gap-2">
+                                            {AVATARS.female.map((avatar) => (
+                                                <button
+                                                    key={avatar.id}
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, avatar: avatar.id })}
+                                                    className={`w-full aspect-square rounded-xl flex items-center justify-center text-3xl transition-all ${
+                                                        formData.avatar === avatar.id
+                                                            ? 'bg-primary/20 border-2 border-primary scale-110'
+                                                            : 'bg-muted/30 hover:bg-muted/50 border border-border'
+                                                    }`}
+                                                    title={avatar.label}
+                                                >
+                                                    {avatar.emoji}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         <div className="glass-card p-6 rounded-2xl space-y-4">
                             <h3 className="text-lg font-semibold flex items-center gap-2">
                                 <User size={18} className="text-primary" /> About Me

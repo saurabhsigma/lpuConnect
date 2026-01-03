@@ -49,26 +49,33 @@ export default function StorePage() {
     const categories = ["All", "Textbooks", "Electronics", "Furniture", "Clothing", "Other"];
 
     return (
-        <div className="min-h-screen bg-background p-4 md:p-8">
-            <div className="max-w-7xl mx-auto space-y-8">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div>
-                        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-400 flex items-center gap-2">
-                            <ShoppingBag className="text-blue-400" /> Surplus Store
-                        </h1>
-                        <p className="text-muted-foreground mt-1">Buy and sell campus essentials.</p>
+        <div className="min-h-screen bg-background">
+            {/* Header */}
+            <div className="relative px-4 md:px-8 pt-8 pb-12 md:pt-16 md:pb-20 bg-gradient-to-br from-blue-500/10 via-background to-cyan-500/10 border-b border-border">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+                    <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center">
+                                <ShoppingBag className="text-white" size={24} />
+                            </div>
+                            <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-400">
+                                Surplus Store
+                            </h1>
+                        </div>
+                        <p className="text-muted-foreground text-lg max-w-xl">Buy and sell quality items with your campus community. Fair prices, trusted peers.</p>
                     </div>
                     <Link
                         href="/store/new"
-                        className="px-6 py-2 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/25"
+                        className="px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:shadow-lg hover:shadow-blue-500/40 transition-all duration-300 flex items-center gap-2 whitespace-nowrap hover:-translate-y-1"
                     >
-                        <Plus size={18} /> Sell Item
+                        <Plus size={20} /> Sell Item
                     </Link>
                 </div>
+            </div>
 
+            <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12 space-y-8">
                 {/* Search & Filter */}
-                <div className="glass-card p-4 rounded-xl flex flex-col md:flex-row gap-4">
+                <div className="glass-card p-5 rounded-2xl flex flex-col md:flex-row gap-4 border border-border/50">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-2.5 text-muted-foreground h-5 w-5" />
                         <input
@@ -84,9 +91,9 @@ export default function StorePage() {
                             <button
                                 key={cat}
                                 onClick={() => setCategory(cat)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${category === cat
-                                        ? "bg-primary/20 text-primary border border-primary/20"
-                                        : "bg-background/50 hover:bg-background/80 border border-border text-muted-foreground"
+                                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-300 ${category === cat
+                                        ? "bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-blue-400 border border-blue-500/30"
+                                        : "bg-background/50 hover:bg-background/80 border border-border text-muted-foreground hover:text-foreground"
                                     }`}
                             >
                                 {cat}
@@ -97,16 +104,26 @@ export default function StorePage() {
 
                 {/* Products Grid */}
                 {loading ? (
-                    <div className="text-center py-20 text-muted-foreground">Loading products...</div>
+                    <div className="text-center py-32">
+                        <div className="animate-pulse text-muted-foreground text-lg">Loading products...</div>
+                    </div>
                 ) : filteredProducts.length === 0 ? (
-                    <div className="text-center py-20 text-muted-foreground glass-card rounded-2xl">
-                        <p>No items found.</p>
-                        <Link href="/store/new" className="text-primary hover:underline mt-2 inline-block">List an item for sale</Link>
+                    <div className="text-center py-32 glass-card rounded-3xl border-2 border-dashed border-border/50">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500/10 to-cyan-500/10 flex items-center justify-center mx-auto mb-4">
+                            <ShoppingBag size={32} className="text-blue-400/50" />
+                        </div>
+                        <p className="text-foreground font-semibold text-lg mb-2">No items found</p>
+                        <p className="text-muted-foreground mb-6">Try adjusting your search or filters</p>
+                        <Link href="/store/new" className="inline-block px-6 py-2 rounded-full bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-all">List an Item</Link>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {filteredProducts.map(product => (
-                            <div key={product._id} className="glass-card rounded-xl overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
+                            <Link 
+                                key={product._id} 
+                                href={`/store/${product._id}`}
+                                className="glass-card rounded-xl overflow-hidden group hover:scale-[1.02] transition-transform duration-300"
+                            >
                                 {/* Image Placeholder */}
                                 <div className="h-48 bg-muted/50 relative overflow-hidden flex items-center justify-center">
                                     {product.image ? (
@@ -115,7 +132,7 @@ export default function StorePage() {
                                         <ShoppingBag className="h-12 w-12 text-muted-foreground/30" />
                                     )}
                                     <div className="absolute top-2 right-2 px-2 py-1 bg-black/50 backdrop-blur rounded text-xs text-white font-medium">
-                                        ${product.price}
+                                        ₹{product.price}
                                     </div>
                                 </div>
 
@@ -132,7 +149,7 @@ export default function StorePage() {
                                         <span className="text-xs text-muted-foreground">{product.sellerId?.name || "Unknown Seller"}</span>
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 )}
